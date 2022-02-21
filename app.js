@@ -135,8 +135,8 @@ bot.hears('Withdraw Request' , ctx=>{
         if (e) {
             console.log(e)
         } else {
-            const hasUser = data.length
-            if (hasUser >0 ) {
+            const hasBalance = data[0].balance.length
+            if (hasBalance >0 ) {
 
                 const userId = ctx.from.id
                 const name = data[0].name
@@ -159,7 +159,7 @@ bot.hears('Withdraw Request' , ctx=>{
                             if (e) {
                                 console.log(e)
                             }else{
-                                ctx.telegram.sendMessage(ctx.chat.id , `Hello ${ctx.from.first_name} \n\nYour withdrawl request has been sucessfully submited` , {
+                                ctx.telegram.sendMessage(ctx.chat.id , `Your withdraw request has been sucessfully submited` , {
                                     reply_markup:{
                                         keyboard: [
                                             [{text: "Back"}]
@@ -172,6 +172,15 @@ bot.hears('Withdraw Request' , ctx=>{
                     }
                 })
 
+            }else{
+                ctx.telegram.sendMessage(ctx.chat.id , `Sorry, Your have not enough balance.` , {
+                    reply_markup:{
+                        keyboard: [
+                            [{text: "Back"}]
+                        ],
+                        resize_keyboard: true
+                    }
+                }).catch((e)=>console.log(e))
             }
         }
     })
