@@ -135,52 +135,61 @@ bot.hears('Withdraw Request' , ctx=>{
         if (e) {
             console.log(e)
         } else {
-            const hasBalance = data[0].balance.length
-            if (hasBalance >0 ) {
+            const hasUser = data[0].length
+            if (hasUser >0 ) {
 
                 const userId = ctx.from.id
                 const name = data[0].name
                 const wallet = data[0].wallet
                 const balance = data[0].balance
 
-                const withdrawData = new withdrawlModel({
-                    userId: userId,
-                    name: name,
-                    withdrawl_balance: balance,
-                    wallet: wallet
-                })
+                const bl = parseFloat(balance)
 
-                withdrawData.save((e)=>{
-                    if (e) {
-                        console.log(e)
-                    } else {
-                        
-                        userModel.updateOne({userId: ctx.from.id} , {balance : 0} , (e)=>{
-                            if (e) {
-                                console.log(e)
-                            }else{
-                                ctx.telegram.sendMessage(ctx.chat.id , `Your withdraw request has been sucessfully submited` , {
-                                    reply_markup:{
-                                        keyboard: [
-                                            [{text: "Back"}]
-                                        ],
-                                        resize_keyboard: true
-                                    }
-                                }).catch((e)=>console.log(e))
-                            }
-                        })
-                    }
-                })
+                if (bl > 0) {
 
-            }else{
-                ctx.telegram.sendMessage(ctx.chat.id , `Sorry, Your have not enough balance.` , {
-                    reply_markup:{
-                        keyboard: [
-                            [{text: "Back"}]
-                        ],
-                        resize_keyboard: true
-                    }
-                }).catch((e)=>console.log(e))
+                    const withdrawData = new withdrawlModel({
+                        userId: userId,
+                        name: name,
+                        withdrawl_balance: balance,
+                        wallet: wallet
+                    })
+    
+                    withdrawData.save((e)=>{
+                        if (e) {
+                            console.log(e)
+                        } else {
+                            
+                            userModel.updateOne({userId: ctx.from.id} , {balance : 0} , (e)=>{
+                                if (e) {
+                                    console.log(e)
+                                }else{
+                                    ctx.telegram.sendMessage(ctx.chat.id , `Your withdraw request has been sucessfully submited` , {
+                                        reply_markup:{
+                                            keyboard: [
+                                                [{text: "Back"}]
+                                            ],
+                                            resize_keyboard: true
+                                        }
+                                    }).catch((e)=>console.log(e))
+                                }
+                            })
+                        }
+                    })
+                    
+                } else {
+                    
+
+                    ctx.telegram.sendMessage(ctx.chat.id , `Sorry, You have not enough balance to withdraw` , {
+                        reply_markup:{
+                            keyboard: [
+                                [{text: "Back"}]
+                            ],
+                            resize_keyboard: true
+                        }
+                    }).catch((e)=>console.log(e))
+
+                }
+
             }
         }
     })
